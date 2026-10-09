@@ -2,7 +2,7 @@
 
 A working clone of the AWS Route 53 console, built with Next.js, FastAPI and SQLite. It has real accounts, hosted zones and DNS records, live health checks that probe your endpoints, a DNS "Test record" resolver, and a CloudShell terminal that runs `aws route53` commands against your data. It recreates the Route 53 look (dark AWS palette, top bar, side navigation, footer). It does not serve DNS on port 53 to the internet.
 
-**Live demo:** _add your Vercel URL here_ · **API docs:** `<backend-url>/api/docs`
+**Live demo:** https://scaler-aws-route-53-clone.vercel.app
 
 ![Route 53 landing page](docs/screenshots/landing.png)
 
