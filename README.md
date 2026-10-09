@@ -1,38 +1,66 @@
-# Route 53 Clone
+# AWS Route 53 Clone
 
-A working clone of the AWS Route 53 console, built with Next.js, FastAPI and SQLite. It has real accounts, hosted zones and DNS records, live health checks that probe your endpoints, a DNS "Test record" resolver, and a CloudShell terminal that runs `aws route53` commands against your data. It recreates the Route 53 look (dark AWS palette, top bar, side navigation, footer). It does not serve DNS on port 53 to the internet.
+A full-stack clone of the AWS Route 53 console. It has real accounts, hosted zones and DNS records, live health checks that probe your endpoints, a DNS "Test record" resolver, and a CloudShell terminal that runs `aws route53` commands against your data. The UI recreates the Route 53 console look using the same design system AWS uses. It does not serve DNS on port 53 to the internet.
 
-**Live demo:** https://scaler-aws-route-53-clone.vercel.app
+| | |
+|---|---|
+| **Live app** | https://scaler-aws-route-53-clone.vercel.app/ |
+| **API** | https://route53-clone-api-775i.onrender.com |
+| **API docs (Swagger)** | https://route53-clone-api-775i.onrender.com/api/docs |
 
 ![Route 53 landing page](docs/screenshots/landing.png)
+
+## Try it
+
+Open the live app and sign in with the demo account, or create your own.
+
+| Field | Value |
+|---|---|
+| Account ID or alias | leave empty, or `123456789012` / `scaler-demo` |
+| User name | `demo` |
+| Password | `demo1234` |
+
+The demo account comes with three sample hosted zones. Anyone can also sign up from the sign-in page; each account only sees its own data.
+
+> The backend runs on a free Render instance. It sleeps when idle, so the first request after a quiet period can take up to a minute. Data is stored in SQLite on a non-persistent disk, so accounts, zones and records you create are reset when the service restarts or redeploys. The demo account is re-created automatically.
+
+## Tech stack
+
+| Layer | Technology |
+|---|---|
+| Frontend | Next.js 15 (App Router), React 19, TypeScript, AWS Cloudscape Design System, TanStack Query |
+| Backend | FastAPI, SQLAlchemy 2, Pydantic 2, dnspython, httpx |
+| Database | SQLite |
+| Testing | pytest |
+| Hosting | Vercel (frontend), Render (backend) |
 
 ## Features
 
 **Console shell**
 
-- AWS top bar: logo, Route 53 service icon, services menu, global search (`Alt+S`) across pages, zones, records and health checks, a CloudShell button, a notifications bell with unread badge, help, and the account menu.
-- Account menu: account alias, Free plan status (credits and days remaining), links to account, security credentials, sessions and profile, language, visual mode (browser default, light, dark), and sign out.
+- AWS-style top bar: logo, services menu, global search (`Alt+S`) across pages, zones, records and health checks, CloudShell button, notifications bell with unread badge, help, and account menu.
+- Account menu: account alias, Free plan status, links to profile and sessions, language, visual mode (browser default, light, dark) and sign out.
 - Footer: CloudShell, Feedback (stored in the database), language, privacy, terms and cookie links.
-- Dark mode is the default and uses the AWS console palette. Light mode and browser default are one click away.
+- Dark mode by default, using the AWS console palette.
 
 **Pages**
 
-- **Landing page** (`/`): Route 53 intro, Get started, pricing, resources, How it works, products, benefits and use cases.
-- **Dashboard**: resource counters, service cards, records-by-type chart, health status chart and recent activity.
+- **Landing page**: Route 53 introduction, pricing, resources, how it works, products, benefits and use cases.
+- **Dashboard**: resource counters, records-by-type chart, health status chart and recent activity.
 - **Hosted zones**: list, search, filter, paginate, create (public or private), view, edit, delete and bulk delete.
-- **Records**: A, AAAA, CNAME, TXT, MX, NS, PTR, SRV and CAA with per-type validation and Route 53 rules (no duplicates, no CNAME at the apex or beside other records, protected apex NS/SOA). Create several at once, edit, delete, bulk delete, and attach a health check.
+- **Records**: A, AAAA, CNAME, TXT, MX, NS, PTR, SRV and CAA with per-type validation and Route 53 rules (no duplicates, no CNAME at the apex or beside other records, protected apex NS and SOA). Create several at once, edit, delete, bulk delete, and attach a health check.
 - **Test record**: asks the zone what Route 53 would answer for a name and type, following wildcards and CNAME chains, and returns NOERROR or NXDOMAIN.
-- **Health checks**: HTTP, HTTPS and TCP checks with an IP address or domain name, port, path, optional string matching, 10 or 30 second interval, failure threshold, invert and disable. A background checker probes every endpoint on its interval. The details page shows status and latency charts and the result history, with Check now, Enable/Disable, Edit and Delete.
-- **Profile**: account details (name, email, alias), plan and credits, change password (signs out other sessions), active sessions with sign-out, and visual mode.
-- **Sign up and sign in**: anyone can create an account (its own 12-digit account ID); each account only sees its own data.
-- Placeholder "Coming soon" pages for Profiles, Traffic policies, Domains, Resolver and DNS Firewall.
+- **Health checks**: HTTP, HTTPS and TCP checks with an IP address or domain name, port, path, optional string matching, 10 or 30 second interval, failure threshold, invert and disable. A background checker probes every endpoint on its interval. The details page shows status and latency charts and the result history.
+- **Profile**: account details, change password (signs out other sessions), active sessions with sign-out, and visual mode.
+- **Sign up and sign in**: each account gets its own 12-digit account ID.
+- "Coming soon" pages for Profiles, Traffic policies, Domains, Resolver and DNS Firewall.
 
 **Extras**
 
-- **CloudShell**: a terminal in the footer that runs a subset of the AWS CLI (`aws route53 list-hosted-zones`, `create-hosted-zone`, `change-resource-record-sets`, `test-dns-answer`, `create-health-check`, `get-health-check-status` and more; type `help`). Output is AWS-style JSON.
-- **Import and export**: BIND zone file import with preview, export as BIND or JSON.
-- **Notifications**: every change and every health status flip is logged and shown in the bell drawer.
-- **Keyboard shortcuts** (press `?`): `Alt+S` search, `Alt+T` CloudShell, `Alt+M` visual mode, `g` then `h/d/z/c/p` to go home, dashboard, zones, checks or profile, `c` to create, `/` to filter.
+- **CloudShell**: a terminal that runs a subset of the AWS CLI (`aws route53 list-hosted-zones`, `create-hosted-zone`, `change-resource-record-sets`, `test-dns-answer`, `create-health-check`, `get-health-check-status` and more; type `help`). Output is AWS-style JSON.
+- **Import and export**: BIND zone file import with preview, and export as BIND or JSON.
+- **Notifications**: every change and every health status flip is logged and shown in the notifications drawer.
+- **Keyboard shortcuts** (press `?`): `Alt+S` search, `Alt+T` CloudShell, `Alt+M` visual mode, `g` then `h/d/z/c/p` to navigate, `c` to create, `/` to filter.
 
 | Dashboard | Health check |
 |---|---|
@@ -42,82 +70,76 @@ A working clone of the AWS Route 53 console, built with Next.js, FastAPI and SQL
 | **Account menu** | **Profile** |
 | ![Account menu](docs/screenshots/account-menu.png) | ![Profile](docs/screenshots/profile.png) |
 
-## Setup
-
-Requirements: Python 3.11+ and Node.js 20+. 
-
-### Backend
-
-```bash
-cd backend
-python -m venv .venv
-source .venv/bin/activate          # Windows: .venv\Scripts\activate
-pip install -r requirements-dev.txt
-uvicorn app.main:app --reload --port 8000
-```
-
-On first start the API creates `backend/route53.db` with all tables. Interactive API docs are at http://localhost:8000/api/docs. Run the tests with `pytest`.
-
-| Variable | Default | Purpose |
-|---|---|---|
-| `DATABASE_URL` | `sqlite:///backend/route53.db` | SQLite file location. Use an absolute path on servers, e.g. `sqlite:////var/data/route53.db` |
-| `SEED_ON_STARTUP` | `true` | `true` creates a demo account (`123456789012` / `demo` / `demo1234`) with three sample zones |
-| `ALLOW_SIGNUP` | `true` | Allow new accounts from the sign-up page |
-| `HEALTH_CHECKER_ENABLED` | `true` | Run the background health checker |
-| `ALLOW_PRIVATE_HEALTH_CHECK_TARGETS` | `false` | Allow checks against private or loopback IPs (useful locally; keep off on a public server) |
-| `SESSION_TTL_HOURS` | `72` | Session lifetime |
-| `COOKIE_SECURE` | `false` | Set `true` in production (HTTPS) |
-| `CORS_ORIGINS` | `http://localhost:3000` | Comma-separated allowed origins |
-
-### Frontend
-
-```bash
-cd frontend
-cp .env.example .env.local         # BACKEND_URL=http://localhost:8000
-npm install
-npm run dev
-```
-
-Open http://localhost:3000, choose **Create a new account**, and you are in.
-
-## Deployment
-
-**Backend on Render.** In Render choose **New + → Blueprint** and pick this repository; `render.yaml` sets everything up. Set `CORS_ORIGINS` to your Vercel URL when prompted.
-
-- Render's free plan has no persistent disk, so the SQLite file is wiped on every redeploy or restart. That is why the blueprint sets `SEED_ON_STARTUP=true`: reviewers always have a demo account. For data that survives, use a paid instance, uncomment the `disk` block in `render.yaml`, set `DATABASE_URL=sqlite:////var/data/route53.db`, and set `SEED_ON_STARTUP=false` if you don't want the demo account.
-- Free instances sleep when idle, so the first request after a while is slow and health checks pause while asleep.
-
-**Frontend on Vercel.** Import the repository, set **Root Directory** to `frontend`, and add `BACKEND_URL=https://<your-service>.onrender.com`.
-
 ## Architecture
 
 ```
-Browser ──► Next.js (Vercel) ──/api/* rewrite──► FastAPI (Render) ──► SQLite
-             App Router + Cloudscape                routes → controllers → services → SQLAlchemy models
-                                                    background health checker (asyncio + httpx)
+Browser ──► Next.js on Vercel ──/api/* rewrite──► FastAPI on Render ──► SQLite
+             App Router + Cloudscape               routes → controllers → services → models
+                                                   background health checker (asyncio + httpx)
 ```
 
-- `/api/*` is proxied through a Next.js rewrite, so the session cookie is first-party.
-- `middleware.ts` sends visitors without a session to `/login`; the API checks the token on every request.
-- The UI uses [Cloudscape](https://cloudscape.design), the design system the AWS console uses, plus a custom top bar, footer and CloudShell matching the console.
-- The zones and records service layers (`modules/zones/service.py`, `modules/records/service.py`) back both the REST API and the CloudShell CLI, so both apply the same validation and write the same activity log.
-- The health checker runs inside the API process. Each probe is an HTTP(S) GET or a TCP connect with a 4 second connect and 2 second read timeout; 2xx and 3xx count as healthy. Targets that resolve to private addresses are refused unless explicitly allowed.
-- New columns are added to an existing SQLite file automatically on startup, so upgrading keeps your data.
+- `/api/*` is proxied through a Next.js rewrite, so the session cookie is first-party and secure.
+- `middleware.ts` sends visitors without a session to `/login`; the API validates the session token on every request.
+- The backend is split into domain modules. Each module has its own `models`, `schemas`, `service`, `controller` and `routes`.
+- The zones and records services back both the REST API and the CloudShell CLI, so both apply the same validation and write the same activity log.
+- The health checker runs inside the API process. Each probe is an HTTP(S) GET or a TCP connect with a 4 second connect and 2 second read timeout; 2xx and 3xx count as healthy. Targets that resolve to private addresses are refused.
+- New database columns are added automatically on startup, so upgrades keep existing data.
+
+### Project structure
 
 ```
 backend/app/
   main.py, seed.py
   core/      config, db, errors, dns_rules, schemas (Page, bulk delete), timeutil
-  modules/   one package per domain, each with models, schemas, service, controller and routes:
-             auth (+ security), zones (+ exporter), records (+ resolver, zonefile),
+  modules/   auth (+ security), zones (+ exporter), records (+ resolver, zonefile),
              healthchecks (+ probe, checker), activity, dashboard, search, feedback,
              cli (+ parser, serializers, commands)
+backend/tests/         API and feature tests
 frontend/src/
-  app/login, app/signup
-  app/(console)/  page.tsx (landing), dashboard, hostedzones/..., healthchecks/..., profile, [...section]
-  components/     console-layout, shell/ (top bar, search, account menu, CloudShell, footer, drawers,
-                  shortcuts), record and health check forms, tables, modals
-  lib/            API client, query hooks, DNS helpers, types, nav
+  app/                 login, signup, (console)/ pages: landing, dashboard, hostedzones, healthchecks, profile
+  components/          console layout, shell (top bar, search, account menu, CloudShell, footer), forms, tables, modals
+  lib/                 API client, query hooks, DNS helpers, types, navigation
+render.yaml            Render blueprint for the backend
+```
+
+## Deployment
+
+**Backend on Render.** In Render choose **New + → Blueprint**, pick this repository, and `render.yaml` creates the service. Set `CORS_ORIGINS` to the Vercel URL.
+
+**Frontend on Vercel.** Import the repository, set **Root Directory** to `frontend`, and add the environment variable `BACKEND_URL` set to the Render service URL (no trailing slash). Redeploy after changing it, because the API proxy is configured at build time.
+
+### Backend environment variables
+
+| Variable | Production value | Purpose |
+|---|---|---|
+| `CORS_ORIGINS` | `https://scaler-aws-route-53-clone.vercel.app` | Comma-separated allowed frontend origins |
+| `COOKIE_SECURE` | `true` | Send the session cookie over HTTPS only |
+| `SEED_ON_STARTUP` | `true` | Create the demo account and sample zones on start |
+| `ALLOW_SIGNUP` | `true` | Allow new accounts from the sign-up page |
+| `HEALTH_CHECKER_ENABLED` | `true` | Run the background health checker |
+| `ALLOW_PRIVATE_HEALTH_CHECK_TARGETS` | `false` | Keep off on a public server |
+| `SESSION_TTL_HOURS` | `72` | Session lifetime |
+| `DATABASE_URL` | SQLite file under the app directory | Use an absolute path on a persistent disk, for example `sqlite:////var/data/route53.db` |
+| `PYTHON_VERSION` | `3.12.7` | Python runtime on Render |
+
+### Frontend environment variables
+
+| Variable | Value |
+|---|---|
+| `BACKEND_URL` | `https://route53-clone-api-775i.onrender.com` |
+
+### Persistent data
+
+Render's free plan has no persistent disk, so the SQLite file is wiped on every redeploy or restart. For durable data, use a paid instance, uncomment the `disk` block in `render.yaml`, and set `DATABASE_URL=sqlite:////var/data/route53.db`.
+
+## Testing
+
+The backend has 20 tests covering authentication, hosted zones, records, import and export, the DNS resolver, search, the CloudShell CLI, health checks and database upgrades:
+
+```bash
+cd backend
+pip install -r requirements-dev.txt
+pytest
 ```
 
 ## Database schema
@@ -140,6 +162,8 @@ feedback (id, owner_id → users, rating, message, page, created_at)
 Deletes cascade from users to everything they own, and from zones to records. Only the latest 500 results are kept per health check.
 
 ## API overview
+
+Interactive documentation: https://route53-clone-api-775i.onrender.com/api/docs
 
 All endpoints are under `/api`. Apart from login, register, config and health, they need the session cookie.
 
@@ -173,4 +197,4 @@ Errors look like `{ "detail": "...", "code": "NoSuchHostedZone" }`.
 
 ## What is simulated
 
-Billing and IAM are simplified: each account has one user, and the Free plan credits are display-only. Alias records, non-simple routing policies, DNSSEC, tags, domain registration, traffic flow and Resolver are disabled or "Coming soon". DNS answers are available through Test record and the CLI, not on port 53.
+Billing and IAM are simplified: each account has one user, and the Free plan credits are display-only. Alias records, non-simple routing policies, DNSSEC, tags, domain registration, traffic flow and Resolver are disabled or marked "Coming soon". DNS answers are available through Test record and the CloudShell CLI, not on port 53.
