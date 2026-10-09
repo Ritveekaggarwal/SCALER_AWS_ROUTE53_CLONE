@@ -1,0 +1,17 @@
+html,
+body {
+  margin: 0;
+  padding: 0;
+}
+
+.mono {
+  font-family: Monaco, Menlo, Consolas, "Courier Prime", Courier, "Courier New", monospace;
+  font-size: 12px;
+}
+
+.value-list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  word-break: break-all;
+}
