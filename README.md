@@ -5,7 +5,6 @@ A full-stack clone of the AWS Route 53 console. It has real accounts, hosted zon
 | | |
 |---|---|
 | **Live app** | https://scaler-aws-route-53-clone.vercel.app/ |
-| **API** | https://route53-clone-api-775i.onrender.com |
 | **API docs (Swagger)** | https://route53-clone-api-775i.onrender.com/api/docs |
 
 ![Route 53 landing page](docs/screenshots/landing.png)
@@ -102,45 +101,6 @@ frontend/src/
 render.yaml            Render blueprint for the backend
 ```
 
-## Deployment
-
-**Backend on Render.** In Render choose **New + → Blueprint**, pick this repository, and `render.yaml` creates the service. Set `CORS_ORIGINS` to the Vercel URL.
-
-**Frontend on Vercel.** Import the repository, set **Root Directory** to `frontend`, and add the environment variable `BACKEND_URL` set to the Render service URL (no trailing slash). Redeploy after changing it, because the API proxy is configured at build time.
-
-### Backend environment variables
-
-| Variable | Production value | Purpose |
-|---|---|---|
-| `CORS_ORIGINS` | `https://scaler-aws-route-53-clone.vercel.app` | Comma-separated allowed frontend origins |
-| `COOKIE_SECURE` | `true` | Send the session cookie over HTTPS only |
-| `SEED_ON_STARTUP` | `true` | Create the demo account and sample zones on start |
-| `ALLOW_SIGNUP` | `true` | Allow new accounts from the sign-up page |
-| `HEALTH_CHECKER_ENABLED` | `true` | Run the background health checker |
-| `ALLOW_PRIVATE_HEALTH_CHECK_TARGETS` | `false` | Keep off on a public server |
-| `SESSION_TTL_HOURS` | `72` | Session lifetime |
-| `DATABASE_URL` | SQLite file under the app directory | Use an absolute path on a persistent disk, for example `sqlite:////var/data/route53.db` |
-| `PYTHON_VERSION` | `3.12.7` | Python runtime on Render |
-
-### Frontend environment variables
-
-| Variable | Value |
-|---|---|
-| `BACKEND_URL` | `https://route53-clone-api-775i.onrender.com` |
-
-### Persistent data
-
-Render's free plan has no persistent disk, so the SQLite file is wiped on every redeploy or restart. For durable data, use a paid instance, uncomment the `disk` block in `render.yaml`, and set `DATABASE_URL=sqlite:////var/data/route53.db`.
-
-## Testing
-
-The backend has 20 tests covering authentication, hosted zones, records, import and export, the DNS resolver, search, the CloudShell CLI, health checks and database upgrades:
-
-```bash
-cd backend
-pip install -r requirements-dev.txt
-pytest
-```
 
 ## Database schema
 
@@ -193,7 +153,6 @@ All endpoints are under `/api`. Apart from login, register, config and health, t
 | POST | `/feedback` | Send feedback |
 | GET | `/health` | Service health |
 
-Errors look like `{ "detail": "...", "code": "NoSuchHostedZone" }`.
 
 ## What is simulated
 
